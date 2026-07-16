@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>repal admin | 문의 &amp; 트래킹</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0813; --bg-2:#100C1C; --surface:#171123; --surface-2:#1D1729;
+    --border:#2C2440; --border-soft:#221C33;
+    --primary:#8B5CF6; --primary-deep:#6D28D9; --primary-bright:#A78BFA; --accent-pink:#E879F9; --lavender:#C4B5FD;
+    --text:#F5F3FF; --text-dim:#B7AFC9; --text-mute:#847C99;
+    --green:#34D399; --amber:#FBBF24; --red:#F87171;
+    --mono:'IBM Plex Mono', monospace;
+    --sans:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:var(--sans); -webkit-font-smoothing:antialiased; min-height:100vh;}
+  a{color:inherit;}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 28px;}
+
+  header{
+    position:sticky; top:0; z-index:20; background:rgba(10,8,19,0.85); backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border-soft); padding:20px 0;
+  }
+  .header-inner{display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .logo{font-family:var(--mono); font-weight:700; font-size:19px;}
+  .brand .dot{width:8px; height:8px; border-radius:50%; background:linear-gradient(135deg,var(--primary-bright),var(--accent-pink));}
+  .badge-admin{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--lavender); background:rgba(139,92,246,0.14); border:1px solid rgba(196,181,253,0.35); padding:4px 9px; border-radius:100px;}
+  .refresh-btn{
+    font-family:var(--mono); font-size:12.5px; color:var(--text-dim); background:var(--surface-2); border:1px solid var(--border);
+    padding:9px 16px; border-radius:10px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:all .2s;
+  }
+  .refresh-btn:hover{border-color:var(--primary-bright); color:var(--text);}
+  .refresh-btn.spin .ricon{animation:spin .7s linear;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  main{padding:36px 0 80px;}
+
+  .tabs{display:flex; gap:8px; margin-bottom:28px; border-bottom:1px solid var(--border-soft);}
+  .tab-btn{
+    font-size:14.5px; font-weight:600; color:var(--text-mute); background:none; border:none; cursor:pointer;
+    padding:12px 6px; position:relative; display:flex; align-items:center; gap:8px;
+  }
+  .tab-btn .count{font-family:var(--mono); font-size:11.5px; background:var(--surface-2); border:1px solid var(--border); padding:1px 7px; border-radius:100px; color:var(--text-dim);}
+  .tab-btn.active{color:var(--text);}
+  .tab-btn.active::after{content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:linear-gradient(90deg,var(--primary),var(--accent-pink));}
+  .tab-btn + .tab-btn{margin-left:18px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* filters */
+  .filter-row{display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap;}
+  .filter-chip{
+    font-family:var(--mono); font-size:12.5px; color:var(--text-dim); background:var(--surface); border:1px solid var(--border);
+    padding:8px 15px; border-radius:100px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:7px;
+  }
+  .filter-chip .n{color:var(--text-mute);}
+  .filter-chip:hover{border-color:var(--primary-bright);}
+  .filter-chip.active{background:linear-gradient(135deg,var(--primary),var(--primary-deep)); border-color:transparent; color:#fff;}
+  .filter-chip.active .n{color:rgba(255,255,255,0.75);}
+
+  /* inquiry cards */
+  .inq-list{display:flex; flex-direction:column; gap:14px;}
+  .inq-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px 24px;}
+  .inq-top{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; flex-wrap:wrap;}
+  .inq-brand-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .inq-brand{font-size:17px; font-weight:800;}
+  .inq-cat{font-family:var(--mono); font-size:11px; color:var(--text-mute); background:var(--surface-2); border:1px solid var(--border); padding:3px 9px; border-radius:100px;}
+  .inq-time{font-family:var(--mono); font-size:11.5px; color:var(--text-mute);}
+  .status-select{
+    font-family:var(--mono); font-size:12px; font-weight:600; border-radius:100px; padding:7px 14px; border:1px solid; cursor:pointer;
+    background:var(--bg); appearance:none; -webkit-appearance:none; padding-right:28px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23B7AFC9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center;
+  }
+  .status-select.pre{color:var(--amber); border-color:rgba(251,191,36,0.4); background-color:rgba(251,191,36,0.08);}
+  .status-select.ing{color:var(--primary-bright); border-color:rgba(167,139,250,0.4); background-color:rgba(139,92,246,0.1);}
+  .status-select.done{color:var(--green); border-color:rgba(52,211,153,0.4); background-color:rgba(52,211,153,0.08);}
+  .inq-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px 24px; margin-bottom:14px;}
+  .inq-field{font-size:13.5px;}
+  .inq-field .k{color:var(--text-mute); font-family:var(--mono); font-size:10.5px; letter-spacing:.04em; display:block; margin-bottom:3px;}
+  .inq-field .v{color:var(--text-dim);}
+  .inq-field .v a{color:var(--primary-bright); text-decoration:underline; word-break:break-all;}
+  .inq-source{
+    margin-top:14px; padding-top:14px; border-top:1px dashed var(--border-soft); font-size:12px; color:var(--text-mute);
+    display:flex; gap:18px; flex-wrap:wrap; font-family:var(--mono);
+  }
+  .inq-source b{color:var(--text-dim); font-weight:600;}
+
+  /* visits table */
+  .visit-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .visit-table th{
+    text-align:left; font-family:var(--mono); font-size:11px; color:var(--text-mute); font-weight:600;
+    padding:0 14px 10px; border-bottom:1px solid var(--border-soft); text-transform:uppercase; letter-spacing:.04em;
+  }
+  .visit-table td{padding:14px; border-bottom:1px solid var(--border-soft); color:var(--text-dim); vertical-align:top;}
+  .visit-table tr:hover td{background:rgba(139,92,246,0.04);}
+  .visit-time{font-family:var(--mono); font-size:12px; color:var(--text-mute); white-space:nowrap;}
+  .visit-ref{color:var(--text); font-weight:600;}
+  .kw-pill{font-family:var(--mono); font-size:11px; background:rgba(232,121,249,0.1); color:var(--accent-pink); border:1px solid rgba(232,121,249,0.3); padding:2px 8px; border-radius:100px; display:inline-block; margin:2px 4px 2px 0;}
+  .table-wrap{overflow-x:auto; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:6px 8px;}
+
+  .empty-state{
+    text-align:center; padding:60px 20px; color:var(--text-mute); border:1px dashed var(--border); border-radius:16px; font-size:14px;
+  }
+  .empty-state .big{font-size:32px; margin-bottom:10px;}
+  .loading{text-align:center; padding:60px 20px; color:var(--text-mute); font-family:var(--mono); font-size:13px;}
+
+  /* login gate */
+  .login-gate{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .login-card{
+    width:100%; max-width:340px; background:var(--surface); border:1px solid var(--border); border-radius:18px;
+    padding:32px 28px; text-align:center; box-shadow:0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .login-logo{font-family:var(--mono); font-weight:700; font-size:19px; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;}
+  .login-logo .dot{width:8px; height:8px; border-radius:50%; background:linear-gradient(135deg,var(--primary-bright),var(--accent-pink)); display:inline-block;}
+  .login-desc{color:var(--text-mute); font-size:13px; margin-bottom:20px;}
+  .login-card input{
+    width:100%; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:13px 14px; color:var(--text);
+    font-size:14px; font-family:var(--sans); margin-bottom:14px;
+  }
+  .login-card input:focus{outline:none; border-color:var(--primary-bright); box-shadow:0 0 0 3px rgba(139,92,246,0.18);}
+  .login-btn{
+    width:100%; padding:13px; border-radius:10px; border:none; font-weight:700; font-size:14px; cursor:pointer;
+    background:linear-gradient(135deg,var(--primary),var(--primary-deep)); color:#fff;
+  }
+  .login-err{color:var(--red); font-size:12.5px; margin-top:12px; min-height:16px;}
+
+  @media (max-width:640px){
+    .inq-grid{grid-template-columns:1fr;}
+    .inq-top{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="brand">
+      <span class="dot"></span><span class="logo">repal</span>
+      <span class="badge-admin">ADMIN</span>
+    </div>
+    <button class="refresh-btn" id="refreshBtn"><span class="ricon">⟳</span> 새로고침</button>
+  </div>
+</header>
+
+<div id="loginGate" class="login-gate">
+  <div class="login-card">
+    <div class="login-logo"><span class="dot"></span>repal <span class="badge-admin">ADMIN</span></div>
+    <p class="login-desc">관리자 토큰을 입력하세요.</p>
+    <input type="password" id="loginToken" placeholder="admin token" autocomplete="off">
+    <button id="loginBtn" class="login-btn">입장하기</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<main class="wrap" id="mainContent" style="display:none;">
+  <div class="tabs">
+    <button class="tab-btn active" data-panel="inq">문의 접수함 <span class="count" id="tabCountInq">0</span></button>
+    <button class="tab-btn" data-panel="visit">방문 트래킹 <span class="count" id="tabCountVisit">0</span></button>
+  </div>
+
+  <!-- ================= INQUIRIES PANEL ================= -->
+  <div class="panel active" id="panel-inq">
+    <div class="filter-row" id="filterRow">
+      <div class="filter-chip active" data-status="all">전체 <span class="n" id="cnt-all">0</span></div>
+      <div class="filter-chip" data-status="상담전">상담 전 <span class="n" id="cnt-pre">0</span></div>
+      <div class="filter-chip" data-status="상담중">상담 중 <span class="n" id="cnt-ing">0</span></div>
+      <div class="filter-chip" data-status="상담후">상담 후 <span class="n" id="cnt-done">0</span></div>
+    </div>
+    <div id="inqContent"><div class="loading">불러오는 중...</div></div>
+  </div>
+
+  <!-- ================= VISITS PANEL ================= -->
+  <div class="panel" id="panel-visit">
+    <div id="visitContent"><div class="loading">불러오는 중...</div></div>
+  </div>
+</main>
+
+<script>
+  const STATUS_LABEL = { '상담전':'상담 전', '상담중':'상담 중', '상담후':'상담 후' };
+  const STATUS_CLASS = { '상담전':'pre', '상담중':'ing', '상담후':'done' };
+  let allInquiries = [];
+  let allVisits = [];
+  let currentFilter = 'all';
+  let ADMIN_TOKEN = '';
+
+  function timeAgo(iso){
+    const d = new Date(iso);
+    const diffMs = Date.now() - d.getTime();
+    const min = Math.floor(diffMs/60000);
+    if(min < 1) return '방금 전';
+    if(min < 60) return min + '분 전';
+    const hr = Math.floor(min/60);
+    if(hr < 24) return hr + '시간 전';
+    const day = Math.floor(hr/24);
+    if(day < 30) return day + '일 전';
+    return d.toLocaleDateString('ko-KR');
+  }
+  function fmtDateTime(iso){
+    const d = new Date(iso);
+    return d.toLocaleString('ko-KR', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+  }
+  function esc(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+  function hostOf(url){
+    try{
+      if(!url || url.startsWith('(')) return url || '(직접 방문)';
+      const u = new URL(url);
+      return u.hostname;
+    }catch(e){ return url; }
+  }
+
+  async function loadAll(){
+    document.getElementById('inqContent').innerHTML = '<div class="loading">불러오는 중...</div>';
+    document.getElementById('visitContent').innerHTML = '<div class="loading">불러오는 중...</div>';
+    await Promise.all([loadInquiries(), loadVisits()]);
+  }
+
+  async function loadInquiries(){
+    allInquiries = [];
+    try{
+      const res = await fetch('/api/inquiries', { headers: { 'x-admin-token': ADMIN_TOKEN } });
+      if(res.status === 401) return handleAuthError();
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || 'load failed');
+      allInquiries = data.items || [];
+    }catch(e){
+      console.warn('inquiry load failed', e);
+    }
+    renderInquiries();
+  }
+
+  async function loadVisits(){
+    allVisits = [];
+    try{
+  async function loadVisits(){
+    allVisits = [];
+    try{
+      const res = await fetch('/api/visits', { headers: { 'x-admin-token': ADMIN_TOKEN } });
+      if(res.status === 401) return handleAuthError();
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || 'load failed');
+      allVisits = data.items || [];
+    }catch(e){
+      console.warn('visit load failed', e);
+    }
+    renderVisits();
+  }
+
+  function renderInquiries(){
+    const counts = { all: allInquiries.length, '상담전':0, '상담중':0, '상담후':0 };
+    allInquiries.forEach(i=>{ if(counts[i.status] !== undefined) counts[i.status]++; });
+    document.getElementById('cnt-all').textContent = counts.all;
+    document.getElementById('cnt-pre').textContent = counts['상담전'];
+    document.getElementById('cnt-ing').textContent = counts['상담중'];
+    document.getElementById('cnt-done').textContent = counts['상담후'];
+    document.getElementById('tabCountInq').textContent = counts.all;
+
+    const filtered = currentFilter === 'all' ? allInquiries : allInquiries.filter(i=>i.status === currentFilter);
+    const wrap = document.getElementById('inqContent');
+
+    if(filtered.length === 0){
+      wrap.innerHTML = `<div class="empty-state"><div class="big">📭</div>아직 접수된 문의가 없습니다.</div>`;
+      return;
+    }
+
+    wrap.innerHTML = `<div class="inq-list">` + filtered.map(i=>{
+      const st = STATUS_CLASS[i.status] || 'pre';
+      const linkVal = i.productLink || '';
+      const safeLink = /^https?:\/\//i.test(linkVal) ? linkVal : ('https://' + linkVal);
+      return `
+      <div class="inq-card">
+        <div class="inq-top">
+          <div class="inq-brand-row">
+            <span class="inq-brand">${esc(i.brand)}</span>
+            <span class="inq-cat">${esc(i.category)}</span>
+            <span class="inq-time">${timeAgo(i.createdAt)} · ${esc(fmtDateTime(i.createdAt))}</span>
+          </div>
+          <select class="status-select ${st}" data-id="${esc(i.id)}">
+            <option value="상담전" ${i.status==='상담전'?'selected':''}>상담 전</option>
+            <option value="상담중" ${i.status==='상담중'?'selected':''}>상담 중</option>
+            <option value="상담후" ${i.status==='상담후'?'selected':''}>상담 후</option>
+          </select>
+        </div>
+        <div class="inq-grid">
+          <div class="inq-field"><span class="k">담당자 / 직급</span><span class="v">${esc(i.contactName)} · ${esc(i.contactTitle)}</span></div>
+          <div class="inq-field"><span class="k">전화번호</span><span class="v">${esc(i.phone)}</span></div>
+          <div class="inq-field"><span class="k">이메일</span><span class="v">${esc(i.email)}</span></div>
+          <div class="inq-field"><span class="k">대표 상품 링크</span><span class="v"><a href="${esc(safeLink)}" target="_blank" rel="noopener">${esc(i.productLink)}</a></span></div>
+        </div>
+        <div class="inq-source">
+          <span><b>유입 경로</b> ${esc(hostOf(i.referrer))}</span>
+          ${i.keyword ? `<span><b>키워드</b> ${esc(i.keyword)}</span>` : ''}
+          ${i.utmSource ? `<span><b>UTM Source</b> ${esc(i.utmSource)}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('') + `</div>`;
+
+    wrap.querySelectorAll('.status-select').forEach(sel=>{
+      sel.addEventListener('change', async (e)=>{
+        const id = e.target.dataset.id;
+        const newStatus = e.target.value;
+        const item = allInquiries.find(x=>x.id === id);
+        if(!item) return;
+        const prevStatus = item.status;
+        item.status = newStatus;
+        e.target.className = 'status-select ' + (STATUS_CLASS[newStatus] || 'pre');
+        try{
+          const res = await fetch('/api/update-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN },
+            body: JSON.stringify({ id, status: newStatus })
+          });
+          const data = await res.json().catch(()=>({}));
+          if(!res.ok || !data.ok) throw new Error(data.error || 'update failed');
+        }catch(err){
+          console.error('status update failed', err);
+          item.status = prevStatus;
+          e.target.value = prevStatus;
+          e.target.className = 'status-select ' + (STATUS_CLASS[prevStatus] || 'pre');
+        }
+        renderInquiries();
+      });
+    });
+  }
+
+  function renderVisits(){
+    document.getElementById('tabCountVisit').textContent = allVisits.length;
+    const wrap = document.getElementById('visitContent');
+    if(allVisits.length === 0){
+      wrap.innerHTML = `<div class="empty-state"><div class="big">🧭</div>아직 기록된 방문 데이터가 없습니다.</div>`;
+      return;
+    }
+    const rows = allVisits.map(v=>{
+      const kw = [];
+      if(v.keyword) kw.push(`<span class="kw-pill">키워드: ${esc(v.keyword)}</span>`);
+      if(v.utmSource) kw.push(`<span class="kw-pill">src: ${esc(v.utmSource)}</span>`);
+      if(v.utmMedium) kw.push(`<span class="kw-pill">medium: ${esc(v.utmMedium)}</span>`);
+      if(v.utmCampaign) kw.push(`<span class="kw-pill">campaign: ${esc(v.utmCampaign)}</span>`);
+      return `
+        <tr>
+          <td class="visit-time">${esc(fmtDateTime(v.createdAt))}</td>
+          <td class="visit-ref">${esc(hostOf(v.referrer))}</td>
+          <td>${kw.length ? kw.join('') : '<span style="color:var(--text-mute)">-</span>'}</td>
+          <td style="max-width:260px; word-break:break-all;">${esc(v.landingUrl)}</td>
+        </tr>`;
+    }).join('');
+    wrap.innerHTML = `
+      <div class="table-wrap">
+        <table class="visit-table">
+          <thead><tr><th>방문 일시</th><th>유입 경로</th><th>키워드 / UTM</th><th>방문 페이지</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // tabs
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+    });
+  });
+
+  // filters
+  document.getElementById('filterRow').addEventListener('click', (e)=>{
+    const chip = e.target.closest('.filter-chip');
+    if(!chip) return;
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.status;
+    renderInquiries();
+  });
+
+  // refresh
+  document.getElementById('refreshBtn').addEventListener('click', async (e)=>{
+    e.currentTarget.classList.add('spin');
+    await loadAll();
+    setTimeout(()=> e.currentTarget.classList.remove('spin'), 400);
+  });
+
+  // ---------- login gate ----------
+  function handleAuthError(){
+    sessionStorage.removeItem('repal_admin_token');
+    showLoginGate('토큰이 만료되었거나 올바르지 않습니다. 다시 입력해주세요.');
+  }
+  function showLoginGate(errText){
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('loginGate').style.display = 'flex';
+    document.getElementById('loginErr').textContent = errText || '';
+  }
+  function showMain(){
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+  }
+
+  async function tryLogin(token){
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.textContent = '확인 중...';
+    try{
+      const res = await fetch('/api/inquiries', { headers: { 'x-admin-token': token } });
+      if(res.status === 401){
+        document.getElementById('loginErr').textContent = '토큰이 올바르지 않습니다.';
+        return;
+      }
+      const data = await res.json();
+      if(!res.ok || !data.ok) throw new Error(data.error || 'login failed');
+      ADMIN_TOKEN = token;
+      sessionStorage.setItem('repal_admin_token', token);
+      showMain();
+      loadAll();
+    }catch(e){
+      document.getElementById('loginErr').textContent = '연결에 실패했습니다. 다시 시도해주세요.';
+    }finally{
+      btn.disabled = false; btn.textContent = '입장하기';
+    }
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', ()=>{
+    const val = document.getElementById('loginToken').value.trim();
+    if(!val){ document.getElementById('loginErr').textContent = '토큰을 입력해주세요.'; return; }
+    tryLogin(val);
+  });
+  document.getElementById('loginToken').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') document.getElementById('loginBtn').click();
+  });
+
+  // auto-login if a token was already validated this session
+  const savedToken = sessionStorage.getItem('repal_admin_token');
+  if(savedToken){
+    tryLogin(savedToken);
+  } else {
+    showLoginGate();
+  }
+</script>
+</body>
+</html>

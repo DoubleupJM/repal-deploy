@@ -1,0 +1,9 @@
+{
+  "name": "repal-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "repal 랜딩페이지 + 어드민 (Vercel + Supabase, 무료 티어)",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4"
+  }
+}
