@@ -243,9 +243,6 @@
   async function loadVisits(){
     allVisits = [];
     try{
-  async function loadVisits(){
-    allVisits = [];
-    try{
       const res = await fetch('/api/visits', { headers: { 'x-admin-token': ADMIN_TOKEN } });
       if(res.status === 401) return handleAuthError();
       const data = await res.json();
