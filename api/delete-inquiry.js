@@ -1,7 +1,9 @@
 const { getSupabase, checkAdmin } = require('./_supabase');
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') return res.status(405).json({ ok: false });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'method not allowed' });
+  }
   if (!checkAdmin(req, res)) return;
   try {
     const { id } = req.body || {};
