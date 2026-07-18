@@ -173,9 +173,9 @@
   <div class="panel active" id="panel-inq">
     <div class="filter-row" id="filterRow">
       <div class="filter-chip active" data-status="all">전체 <span class="n" id="cnt-all">0</span></div>
-      <div class="filter-chip" data-status="상담전">상담 전 <span class="n" id="cnt-pre">0</span></div>
-      <div class="filter-chip" data-status="상담중">상담 중 <span class="n" id="cnt-ing">0</span></div>
-      <div class="filter-chip" data-status="상담후">상담 후 <span class="n" id="cnt-done">0</span></div>
+      <div class="filter-chip" data-status="pre">상담 전 <span class="n" id="cnt-pre">0</span></div>
+      <div class="filter-chip" data-status="ing">상담 중 <span class="n" id="cnt-ing">0</span></div>
+      <div class="filter-chip" data-status="done">상담 후 <span class="n" id="cnt-done">0</span></div>
     </div>
     <div id="inqContent"><div class="loading">불러오는 중...</div></div>
   </div>
@@ -258,17 +258,18 @@
   }
 
   function renderInquiries(){
-    const counts = { all: allInquiries.length, '상담전':0, '상담중':0, '상담후':0 };
+    const counts = { all: allInquiries.length, '상담전':0, '상담중':0, '상담후':0, pre:0, ing:0, done:0 };
     allInquiries.forEach(i=>{ if(counts[i.status] !== undefined) counts[i.status]++; });
     document.getElementById('cnt-all').textContent = counts.all;
-    document.getElementById('cnt-pre').textContent = counts['상담전'];
-    document.getElementById('cnt-ing').textContent = counts['상담중'];
-    document.getElementById('cnt-done').textContent = counts['상담후'];
+    document.getElementById('cnt-pre').textContent = counts['상담전']||counts['pre'];
+    document.getElementById('cnt-ing').textContent = counts['상담중']||counts['ing'];
+    document.getElementById('cnt-done').textContent = counts['상담후']||counts['done'];
     document.getElementById('tabCountInq').textContent = counts.all;
 
+    const STATUS_MAP = {'pre':'상담전','ing':'상담중','done':'상담후'};
     const filtered = currentFilter === 'all' ? allInquiries : allInquiries.filter(i=>{
       const s = (i.status||'').trim();
-      const f = currentFilter.trim();
+      const f = STATUS_MAP[currentFilter] || currentFilter.trim();
       return s === f;
     });
     const wrap = document.getElementById('inqContent');
