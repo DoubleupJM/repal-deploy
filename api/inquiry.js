@@ -14,7 +14,7 @@ async function sendEmail(inquiry) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        from: 'repal <onboarding@resend.dev>',
+        from: 'repal <noreply@revenue-par.com>',
         to: ['jin@revenue-par.com'],
         subject: `[repal] 새 문의: ${inquiry.brand} (${inquiry.category})`,
         html: `<h2>새 문의가 접수되었습니다</h2>
