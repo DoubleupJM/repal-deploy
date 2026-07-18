@@ -1,4 +1,5 @@
 const { getSupabase } = require('./_supabase');
+const sendNotification = require('./send-notification');
 
 const REQUIRED = ['brand', 'category', 'phone', 'contactName', 'contactTitle', 'email', 'productLink'];
 
@@ -44,6 +45,8 @@ module.exports = async (req, res) => {
       .single();
 
     if (error) throw error;
+    // 비동기 이메일 알림 (실패해도 응답에 영향 없음)
+    sendNotification(payload).catch(()=>{});
     res.status(200).json({ ok: true, id: data.id });
   } catch (err) {
     console.error('inquiry error:', err.message);
