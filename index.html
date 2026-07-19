@@ -72,11 +72,13 @@
   /* ---------- nav ---------- */
   header.nav{
     position:fixed; top:0; left:0; right:0; z-index:100;
-    backdrop-filter:blur(16px) saturate(140%);
-    background:rgba(255,255,255,0.82);
+    background:#FFFFFF;
     border-bottom:1px solid var(--border-soft);
     box-shadow:0 1px 0 rgba(20,16,30,0.04);
+    transform:translateY(0);
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
   }
+  header.nav.nav-hidden{transform:translateY(-100%);}
   .nav-inner{
     max-width:1180px; margin:0 auto; padding:0 32px;
     height:72px; display:flex; align-items:center; justify-content:space-between;
@@ -637,7 +639,7 @@
     <div class="section-head reveal">
       <div class="section-eyebrow">HOW WE WORK</div>
       <div class="section-title">대표님은 상품과 고객 운영에만<br>집중하세요</div>
-      <div class="section-sub">매출을 만드는 일은 레팔의 역할입니다. 서로의 영역을 명확히 나누면, 각자 가장 잘하는 일에만 집중할 수 있습니다.</div>
+      <div class="section-sub">매출을 만드는 일은 레팔의 역할입니다.<br>서로의 영역을 명확히 나누면, 각자 가장 잘하는 일에만 집중할 수 있습니다.</div>
     </div>
     <div class="split-grid">
       <div class="split-card you reveal">
@@ -900,6 +902,30 @@
 </footer>
 
 <script>
+  // nav auto-hide on scroll (channel.io style)
+  (function(){
+    const nav = document.querySelector('header.nav');
+    let lastY = window.scrollY;
+    let ticking = false;
+    window.addEventListener('scroll', function(){
+      if(!ticking){
+        requestAnimationFrame(function(){
+          const y = window.scrollY;
+          if(y <= 80){
+            nav.classList.remove('nav-hidden');
+          } else if(y > lastY){
+            nav.classList.add('nav-hidden');
+          } else if(y < lastY){
+            nav.classList.remove('nav-hidden');
+          }
+          lastY = y;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, {passive:true});
+  })();
+
   // scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries)=>{
