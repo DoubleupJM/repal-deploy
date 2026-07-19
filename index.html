@@ -388,10 +388,10 @@
     position:relative; overflow:hidden;
   }
   .ctaband::before{content:''; position:absolute; right:-10%; top:-40%; width:400px; height:400px; background:radial-gradient(circle, rgba(139,92,246,0.18), transparent 65%); filter:blur(20px);}
-  .ctaband h3{font-size:clamp(22px,2.6vw,30px); font-weight:800; margin-bottom:10px; position:relative;}
+  .ctaband h3{font-size:clamp(22px,2.6vw,30px); font-weight:800; margin-bottom:10px; position:relative; white-space:nowrap;}
   .ctaband p{color:var(--text-dim); font-size:14.5px; position:relative;}
   .ctaband{align-items:flex-start;}
-  .cta-intro{max-width:360px; position:relative; z-index:2;}
+  .cta-intro{max-width:460px; position:relative; z-index:2;}
   .cta-form-card{
     position:relative; z-index:2; background:var(--surface); border:1px solid var(--border); border-radius:18px;
     padding:26px 26px 24px; width:100%; max-width:440px; box-shadow:0 20px 50px -20px rgba(23,17,41,0.12);
@@ -447,6 +447,7 @@
     .cta-row{flex-direction:column;}
     .btn-primary,.btn-secondary{width:100%; justify-content:center; text-align:center;}
     .nowrap-line{white-space:normal; display:inline;}
+    .ctaband h3{white-space:normal;}
   }
   :focus-visible{outline:2px solid var(--primary-bright); outline-offset:2px;}
 </style>
@@ -677,7 +678,7 @@
       <div class="gcard reveal">
         <div class="gcard-top">
           <div><div class="gcard-tag">Beauty · 뷰티</div><div class="gcard-name">브랜드 A</div></div>
-          <div class="gcard-growth">▲ 420%</div>
+          <div class="gcard-growth">NEW</div>
         </div>
         <div class="gcard-chart">
           <svg viewBox="0 0 260 90" width="100%" height="90">
@@ -686,13 +687,13 @@
             <path d="M0,80 L37,74 L74,76 L111,55 L148,60 L185,32 L222,26 L260,6" fill="none" stroke="#7C3AED" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="gcard-foot"><span>운영 6개월</span><b>월매출 1.9억 → 8.0억</b></div>
+        <div class="gcard-foot"><span>운영 6개월</span><b>월매출 신규 → 6,500만원</b></div>
       </div>
 
       <div class="gcard reveal">
         <div class="gcard-top">
           <div><div class="gcard-tag">Living · 리빙</div><div class="gcard-name">브랜드 B</div></div>
-          <div class="gcard-growth">▲ 310%</div>
+          <div class="gcard-growth">▲ 300%</div>
         </div>
         <div class="gcard-chart">
           <svg viewBox="0 0 260 90" width="100%" height="90">
@@ -701,13 +702,13 @@
             <path d="M0,82 L37,80 L74,66 L111,68 L148,50 L185,48 L222,28 L260,18" fill="none" stroke="#C026D3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="gcard-foot"><span>운영 4개월</span><b>월매출 2.6억 → 8.1억</b></div>
+        <div class="gcard-foot"><span>운영 4개월</span><b>월매출 3,000만원 → 1.2억</b></div>
       </div>
 
       <div class="gcard reveal">
         <div class="gcard-top">
           <div><div class="gcard-tag">Food · 푸드</div><div class="gcard-name">브랜드 C</div></div>
-          <div class="gcard-growth">▲ 600%</div>
+          <div class="gcard-growth">▲ 224%</div>
         </div>
         <div class="gcard-chart">
           <svg viewBox="0 0 260 90" width="100%" height="90">
@@ -716,7 +717,7 @@
             <path d="M0,84 L37,82 L74,78 L111,60 L148,64 L185,38 L222,22 L260,4" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="gcard-foot"><span>운영 8개월</span><b>월매출 1.4억 → 9.8억</b></div>
+        <div class="gcard-foot"><span>운영 8개월</span><b>월매출 1.7억 → 5.5억</b></div>
       </div>
 
     </div>
@@ -828,7 +829,7 @@
     <div class="ctaband reveal">
       <div class="cta-intro">
         <h3>지금 무료 매출 진단을 받아보세요</h3>
-        <p>3영업일 이내 담당 매니저가 진단 결과와 함께 연락드립니다. 아래 정보를 남겨주시면 빠르게 확인 후 연락드릴게요.</p>
+        <p>3영업일 이내 담당 매니저가 진단 결과와 함께 연락드립니다.<br>아래 정보를 남겨주시면 빠르게 확인 후 연락드릴게요.</p>
       </div>
       <form class="cta-form-card" id="inquiryForm" novalidate>
         <div class="cta-form-grid">
